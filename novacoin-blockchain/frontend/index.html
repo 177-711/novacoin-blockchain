@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaCoin Blockchain</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⭐ NovaCoin Blockchain</h1>
+            <p>Your own cryptocurrency built with Rust</p>
+        </header>
+
+        <div class="user-section">
+            <div class="user-input">
+                <label for="currentUser">Current User ID:</label>
+                <input type="text" id="currentUser" placeholder="Enter your user ID" value="creator" />
+                <button onclick="loadUserData()">Login</button>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <h3>Your Balance</h3>
+                <div id="userBalance" class="balance">Loading...</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Supply</h3>
+                <div id="totalSupply" class="supply">Loading...</div>
+            </div>
+        </div>
+
+        <div class="actions-section">
+            <div class="action-card">
+                <h3>💸 Transfer Tokens</h3>
+                <div class="form-group">
+                    <input type="text" id="transferTo" placeholder="Recipient User ID" />
+                    <input type="number" id="transferAmount" placeholder="Amount" />
+                    <button onclick="transferTokens()">Send Tokens</button>
+                </div>
+            </div>
+
+            <div class="action-card" id="mintSection">
+                <h3>⚡ Mint Tokens (Creator Only)</h3>
+                <div class="form-group">
+                    <input type="text" id="mintTo" placeholder="Recipient User ID" />
+                    <input type="number" id="mintAmount" placeholder="Amount to Mint" />
+                    <button onclick="mintTokens()">Mint Tokens</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="explorer-section">
+            <h3>🔍 Balance Explorer</h3>
+            <div class="form-group">
+                <input type="text" id="exploreUser" placeholder="Enter User ID to check balance" />
+                <button onclick="exploreBalance()">Check Balance</button>
+            </div>
+            <div id="explorerResult"></div>
+        </div>
+
+        <div class="blockchain-section">
+            <h3>⛓️ Blockchain Explorer</h3>
+            <button onclick="loadBlockchain()">Load Blockchain</button>
+            <div id="blockchainData"></div>
+        </div>
+
+        <div id="messages" class="messages"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
