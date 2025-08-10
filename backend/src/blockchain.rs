@@ -17,7 +17,7 @@ impl Block {
     pub fn new(index: u64, transactions: Vec<Transaction>, previous_hash: String) -> Self {
         let timestamp = Utc::now();
         let hash = Self::calculate_hash(index, &timestamp, &transactions, &previous_hash);
-        
+
         Block {
             index,
             timestamp,
@@ -34,7 +34,14 @@ impl Block {
         previous_hash: &str,
     ) -> String {
         let mut hasher = Sha256::new();
-        hasher.update(format!("{}{}{:?}{}", index, timestamp.timestamp(), transactions, previous_hash));
+        let input = format!(
+            "{}{}{:?}{}",
+            index,
+            timestamp.to_rfc3339(),
+            transactions,
+            previous_hash
+        );
+        hasher.update(input);
         hex::encode(hasher.finalize())
     }
 }
@@ -48,17 +55,16 @@ pub struct Blockchain {
 impl Blockchain {
     pub fn new(token_name: String, token_symbol: String, initial_supply: u64, creator: String) -> Self {
         let token = Token::new(token_name, token_symbol, initial_supply, creator.clone());
-        
-        // Create genesis block
+
         let genesis_transaction = Transaction::new(
             "genesis".to_string(),
             creator,
             initial_supply,
             TransactionType::Genesis,
         );
-        
+
         let genesis_block = Block::new(0, vec![genesis_transaction], "0".to_string());
-        
+
         Blockchain {
             chain: vec![genesis_block],
             token,
@@ -77,11 +83,7 @@ impl Blockchain {
         }
 
         let previous_hash = self.chain.last().unwrap().hash.clone();
-        let new_block = Block::new(
-            self.chain.len() as u64,
-            vec![transaction],
-            previous_hash,
-        );
+        let new_block = Block::new(self.chain.len() as u64, vec![transaction], previous_hash);
 
         self.chain.push(new_block);
         Ok(())

@@ -22,8 +22,8 @@ pub enum TransactionType {
 impl Transaction {
     pub fn new(from: String, to: String, amount: u64, tx_type: TransactionType) -> Self {
         let timestamp = Utc::now();
-        let id = Self::generate_id(&from, &to, amount, &timestamp);
-        
+        let id = Self::generate_id(&from, &to, amount, &timestamp, &tx_type);
+
         Transaction {
             id,
             from,
@@ -34,9 +34,23 @@ impl Transaction {
         }
     }
 
-    fn generate_id(from: &str, to: &str, amount: u64, timestamp: &DateTime<Utc>) -> String {
+    fn generate_id(
+        from: &str,
+        to: &str,
+        amount: u64,
+        timestamp: &DateTime<Utc>,
+        tx_type: &TransactionType,
+    ) -> String {
         let mut hasher = Sha256::new();
-        hasher.update(format!("{}{}{}{}", from, to, amount, timestamp.timestamp()));
+        let input = format!(
+            "{}{}{}{}{:?}",
+            from,
+            to,
+            amount,
+            timestamp.to_rfc3339(),
+            tx_type
+        );
+        hasher.update(input);
         hex::encode(hasher.finalize())
     }
 }
