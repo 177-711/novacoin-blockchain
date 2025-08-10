@@ -9,6 +9,8 @@ export interface Props {
 const TransferForm: React.FC<Props> = ({ onTransfer, sender }) => {
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,10 +18,18 @@ const TransferForm: React.FC<Props> = ({ onTransfer, sender }) => {
       alert('Connect your wallet first.');
       return;
     }
-    const success = await onTransfer(to, amount);
-    if (success) {
-      setTo('');
-      setAmount(0);
+    setLoading(true);
+    setError('');
+    try {
+      const success = await onTransfer(to, amount);
+      if (success) {
+        setTo('');
+        setAmount(0);
+      }
+    } catch (err) {
+      setError('Transfer failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,7 +50,9 @@ const TransferForm: React.FC<Props> = ({ onTransfer, sender }) => {
         onChange={(e) => setAmount(Number(e.target.value))}
         required
       />
-      <button type="submit">Send</button>
+      <button type="submit" disabled={loading}>Send</button>
+      {loading && <p>Sending transaction...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 };

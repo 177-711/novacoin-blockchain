@@ -6,6 +6,7 @@ import MintForm from './components/MintForm';
 import UserExplorer from './components/UserExplorer';
 import { getContract } from './utils/contract';
 import { ethers } from 'ethers';
+import { theme } from './styles/theme';
 
 interface EthereumProvider {
   request: (args: { method: string }) => Promise<any>;
@@ -20,6 +21,7 @@ declare global {
 
 const App: React.FC = () => {
   const [address, setAddress] = useState<string | null>(null);
+  const [creator, setCreator] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
   const [totalSupply, setTotalSupply] = useState<number>(0);
@@ -52,7 +54,18 @@ const App: React.FC = () => {
       }
     };
 
+    const fetchCreator = async () => {
+      try {
+        const contract = await getContract();
+        const owner = await contract.owner(); // assumes your contract has owner()
+        setCreator(owner.toLowerCase());
+      } catch (err) {
+        console.error('Failed to fetch creator address:', err);
+      }
+    };
+
     fetchTokenData();
+    fetchCreator();
   }, []);
 
   const handleTransfer = async (to: string, amount: number): Promise<boolean> => {
@@ -69,7 +82,7 @@ const App: React.FC = () => {
   };
 
   const handleMint = async (to: string, amount: number): Promise<boolean> => {
-    if (address !== '0xYourCreatorAddress') {
+    if (!creator || address?.toLowerCase() !== creator) {
       alert('Only the creator can mint tokens.');
       return false;
     }
@@ -108,7 +121,7 @@ const App: React.FC = () => {
       </div>
 
       <div style={styles.section}>
-        <MintForm onMint={handleMint} isCreator={address === '0xYourCreatorAddress'} />
+        <MintForm onMint={handleMint} isCreator={address?.toLowerCase() === creator} />
       </div>
 
       <div style={styles.section}>
@@ -120,37 +133,37 @@ const App: React.FC = () => {
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    fontFamily: 'Arial, sans-serif',
+    fontFamily: theme.font,
     padding: '2rem',
-    backgroundColor: '#1e1e2f',
-    color: '#fff',
+    backgroundColor: theme.colors.background,
+    color: theme.colors.text,
     minHeight: '100vh',
   },
   header: {
     fontSize: '2.5rem',
     marginBottom: '2rem',
     textAlign: 'center',
-    color: '#00ffc3',
+    color: theme.colors.accent,
   },
   section: {
     marginBottom: '2rem',
     padding: '1rem',
-    borderRadius: '8px',
-    backgroundColor: '#2e2e3f',
-    boxShadow: '0 0 10px rgba(0, 255, 195, 0.2)',
+    borderRadius: theme.borderRadius,
+    backgroundColor: theme.colors.surface,
+    boxShadow: theme.shadow,
   },
   button: {
     padding: '0.75rem 1.5rem',
     fontSize: '1rem',
-    backgroundColor: '#00ffc3',
-    color: '#1e1e2f',
+    backgroundColor: theme.colors.accent,
+    color: theme.colors.background,
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
   },
   connected: {
     fontSize: '1rem',
-    color: '#00ffc3',
+    color: theme.colors.accent,
     textAlign: 'center',
   },
 };

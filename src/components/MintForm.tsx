@@ -9,6 +9,8 @@ export interface Props {
 const MintForm: React.FC<Props> = ({ onMint, isCreator }) => {
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,10 +18,18 @@ const MintForm: React.FC<Props> = ({ onMint, isCreator }) => {
       alert('Only the creator can mint tokens.');
       return;
     }
-    const success = await onMint(to, amount);
-    if (success) {
-      setTo('');
-      setAmount(0);
+    setLoading(true);
+    setError('');
+    try {
+      const success = await onMint(to, amount);
+      if (success) {
+        setTo('');
+        setAmount(0);
+      }
+    } catch (err) {
+      setError('Mint failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,7 +50,9 @@ const MintForm: React.FC<Props> = ({ onMint, isCreator }) => {
         onChange={(e) => setAmount(Number(e.target.value))}
         required
       />
-      <button type="submit">Mint</button>
+      <button type="submit" disabled={loading}>Mint</button>
+      {loading && <p>Minting transaction...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 };
